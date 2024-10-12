@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer with Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .main-container {
+            display: flex;
+            align-items: center;
+        }
+        .timer-container {
+            text-align: center;
+            margin-right: 50px;
+        }
+        input {
+            font-size: 2em;
+        }
+        button {
+            font-size: 1.5em;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+        #timeDisplay {
+            margin-top: 20px;
+            font-size: 2em;
+        }
+        .image-container img {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Timer Container -->
+        <div class="timer-container">
+            <h1>Countdown Timer</h1>
+            <input type="time" id="timeInput" step="1" max="23:59:59">
+            <br><br>
+            <button onclick="startTimer()">Start Timer</button>
+            <button onclick="cancelTimer()">Cancel Timer</button>
+            <h2 id="timeDisplay"></h2>
+
+            <!-- Alarm Sound -->
+            <audio id="alarmSound" src="C:\Users\Tomi\Downloads\alarmringtone.mp3"></audio>
+        </div>
+
+        <!-- Image Container -->
+        <div class="image-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/109/109613.png" alt="Web Image">
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        let isAlarmPlaying = false;
+
+        // Function to start the timer
+        function startTimer() {
+            const timeInput = document.getElementById('timeInput').value;
+            if (timeInput === "") {
+                alert("Please set a valid time.");
+                return;
+            }
+
+            const [hours, minutes, seconds] = timeInput.split(':').map(Number);
+            let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+            if (totalSeconds <= 0) {
+                alert("Please set a valid time.");
+                return;
+            }
+
+            document.getElementById('timeDisplay').innerText = formatTime(totalSeconds);
+
+            timerInterval = setInterval(() => {
+                totalSeconds--;
+                document.getElementById('timeDisplay').innerText = formatTime(totalSeconds);
+
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('alarmSound').play();
+                    isAlarmPlaying = true;
+                    document.getElementById('timeDisplay').innerText = "Time's up!";
+                }
+            }, 1000);
+        }
+
+        // Function to format time as HH:MM:SS
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // Function to cancel the timer and stop the alarm
+        function cancelTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timeDisplay').innerText = "Timer Canceled";
+
+            // Stop the alarm if it's playing
+            const alarm = document.getElementById('alarmSound');
+            if (isAlarmPlaying) {
+                alarm.pause();
+                alarm.currentTime = 0; // Reset to the beginning of the sound
+                isAlarmPlaying = false;
+            }
+        }
+    </script>
+
+</body>
+</html>
