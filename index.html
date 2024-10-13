@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown Timer with Image</title>
+    <title>Countdown Timer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-        .main-container {
-            display: flex;
-            align-items: center;
-        }
         .timer-container {
             text-align: center;
-            margin-right: 50px;
+            margin-bottom: 20px;
         }
         input {
             font-size: 2em;
@@ -37,29 +34,28 @@
             max-width: 300px;
             max-height: 300px;
             border-radius: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <!-- Timer Container -->
-        <div class="timer-container">
-            <h1>Countdown Timer</h1>
-            <input type="time" id="timeInput" step="1" max="23:59:59">
-            <br><br>
-            <button onclick="startTimer()">Start Timer</button>
-            <button onclick="cancelTimer()">Cancel Timer</button>
-            <h2 id="timeDisplay"></h2>
+    <!-- Timer Container -->
+    <div class="timer-container">
+        <h1>Countdown Timer</h1>
+        <input type="text" id="timeInput" placeholder="HH:MM:SS" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]" required>
+        <br><br>
+        <button onclick="startTimer()">Start Timer</button>
+        <button onclick="cancelTimer()">Cancel Timer</button>
+        <h2 id="timeDisplay"></h2>
 
-            <!-- Alarm Sound -->
-            <audio id="alarmSound" src="./alarmringtone.mp3"></audio>
-        </div>
+        <!-- Alarm Sound -->
+        <audio id="alarmSound" src="./alarmringtone.mp3"></audio>
+    </div>
 
-        <!-- Image Container -->
-        <div class="image-container">
-            <img src="https://cdn.discordapp.com/attachments/1251592602289963159/1295026074605977651/image.png?ex=670d2684&is=670bd504&hm=f75f56af4a0e0b4a629034098ee42034a648d13836e16893cea1dd03b3c0f88a&" alt="Web Image">
-        </div>
+    <!-- Image Container Below Timer -->
+    <div class="image-container">
+        <img src="https://cdn-icons-png.flaticon.com/512/109/109613.png" alt="Web Image">
     </div>
 
     <script>
@@ -69,13 +65,17 @@
         // Function to start the timer
         function startTimer() {
             const timeInput = document.getElementById('timeInput').value;
-            if (timeInput === "") {
-                alert("Please set a valid time.");
+            const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+
+            // Validate the time format (HH:MM:SS)
+            if (!timePattern.test(timeInput)) {
+                alert("Please enter a valid time in HH:MM:SS format.");
                 return;
             }
 
+            // Split hours, minutes, and seconds from time input
             const [hours, minutes, seconds] = timeInput.split(':').map(Number);
-            let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            let totalSeconds = hours * 3600 + minutes * 60 + (seconds || 0);
 
             if (totalSeconds <= 0) {
                 alert("Please set a valid time.");
@@ -90,7 +90,7 @@
 
                 if (totalSeconds <= 0) {
                     clearInterval(timerInterval);
-                    document.getElementById('alarmSound').play();
+                    document.getElementById('alarmSound').play(); // Play sound when timer ends
                     isAlarmPlaying = true;
                     document.getElementById('timeDisplay').innerText = "Time's up!";
                 }
